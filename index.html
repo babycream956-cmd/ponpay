@@ -1,2 +1,61 @@
-<!DOCTYPE html>
+<!<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ponpay PRO - Pekanbaru</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-[#f6f8f3] max-w-[420px] mx-auto min-h-screen">
+<div class="bg-gradient-to-br from-green-600 to-green-900 p-6 rounded-b-[32px] text-white">
+<p class="text-sm opacity-90">Ponpay PRO • Pekanbaru • Hi Johan 👋</p>
+<p class="text-xs mt-3 opacity-70">Saldo Aktif</p>
+<h1 id="saldo" class="text-4xl font-black mt-1">Rp 1.250.000</h1>
+<div class="flex gap-2 mt-2"><span class="text-[10px] bg-white/20 px-2 py-1 rounded-full">Bank Level Security</span><span class="text-[10px] bg-yellow-400 text-black px-2 py-1 rounded-full">Cashback 30% ON</span></div>
+<div class="grid grid-cols-4 gap-3 mt-6">
+<button onclick="openMenu('transfer')" class="bg-white text-green-700 p-3 rounded-2xl"><i class="fas fa-paper-plane block"></i><span class="text-[10px] font-bold">Transfer 0%</span></button>
+<button onclick="openMenu('pulsa')" class="bg-white text-green-700 p-3 rounded-2xl"><i class="fas fa-mobile-alt block"></i><span class="text-[10px] font-bold">Pulsa 30%</span></button>
+<button onclick="openMenu('pln')" class="bg-white text-green-700 p-3 rounded-2xl"><i class="fas fa-bolt block"></i><span class="text-[10px] font-bold">PLN</span></button>
+<button onclick="openMenu('riwayat')" class="bg-white text-green-700 p-3 rounded-2xl"><i class="fas fa-history block"></i><span class="text-[10px] font-bold">Riwayat</span></button>
+</div>
+</div>
+<div class="m-4 bg-yellow-300 p-4 rounded-2xl flex justify-between"><div><b>Cashback 30% Aktif!</b><p class="text-xs">Klaim untuk pulsa & listrik</p></div><i class="fas fa-gift text-2xl"></i></div>
+<div id="menu-transfer" class="m-4 bg-white p-5 rounded-[20px] shadow">
+<h3 class="font-bold">Transfer Antar Bank 0% Admin</h3>
+<input id="tf-nama" placeholder="Nama & Bank (Budi - BCA)" class="w-full mt-4 p-3 border rounded-xl text-sm">
+<input id="tf-jumlah" type="number" placeholder="Jumlah Rp" class="w-full mt-3 p-3 border rounded-xl text-sm">
+<button onclick="prosesTransfer()" class="w-full mt-4 bg-green-600 text-white p-3 rounded-xl font-bold">Kirim Sekarang</button>
+</div>
+<div id="menu-pulsa" class="hidden m-4 bg-white p-5 rounded-[20px] shadow">
+<h3 class="font-bold">Pulsa - Cashback 30%</h3>
+<input id="pulsa-no" placeholder="Nomor HP 08xx" class="w-full mt-4 p-3 border rounded-xl text-sm">
+<div class="grid grid-cols-3 gap-2 mt-3"><button onclick="setPulsa(10000)" class="border py-2 rounded-xl text-sm">10K</button><button onclick="setPulsa(25000)" class="border py-2 rounded-xl text-sm bg-green-600 text-white">25K</button><button onclick="setPulsa(50000)" class="border py-2 rounded-xl text-sm">50K</button></div>
+<input id="pulsa-jumlah" type="number" class="w-full mt-3 p-3 border rounded-xl bg-gray-100 text-sm" readonly>
+<p id="pulsa-cb" class="text-xs text-orange-600 font-bold mt-2">Cashback: Rp 7.500</p>
+<button onclick="prosesPulsa()" class="w-full mt-4 bg-green-600 text-white p-3 rounded-xl font-bold">Beli + Cashback 30%</button>
+</div>
+<div id="menu-pln" class="hidden m-4 bg-white p-5 rounded-[20px] shadow">
+<h3 class="font-bold">Token PLN - Cashback 30%</h3>
+<input id="pln-no" placeholder="No Meter / ID Pelanggan" class="w-full mt-4 p-3 border rounded-xl text-sm">
+<input id="pln-jumlah" type="number" placeholder="Nominal 20.000" class="w-full mt-3 p-3 border rounded-xl text-sm">
+<button onclick="prosesPLN()" class="w-full mt-4 bg-green-600 text-white p-3 rounded-xl font-bold">Beli Token PLN</button>
+</div>
+<div id="menu-riwayat" class="hidden m-4 bg-white p-5 rounded-[20px] shadow">
+<h3 class="font-bold">Riwayat Ponpay</h3><div id="list-riwayat" class="mt-4"><p class="text-sm text-gray-400">Belum ada transaksi</p></div>
+</div>
+<div id="notif" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 bg-black text-white px-6 py-3 rounded-full text-sm z-50"></div>
+<script>
+let saldo=parseInt(localStorage.getItem('ponpay_saldo')||'1250000');let riwayat=JSON.parse(localStorage.getItem('ponpay_riwayat')||'[]');let pulsaNom=25000;
+function updateSaldo(){document.getElementById('saldo').innerText='Rp '+saldo.toLocaleString('id-ID');localStorage.setItem('ponpay_saldo',saldo);renderRiwayat();}
+function openMenu(m){document.querySelectorAll('[id^=menu-]').forEach(e=>e.classList.add('hidden'));document.getElementById('menu-'+m).classList.remove('hidden');}
+function setPulsa(n){pulsaNom=n;document.getElementById('pulsa-jumlah').value=n;document.getElementById('pulsa-cb').innerText='Cashback: Rp '+(n*0.3).toLocaleString()+' (30%)';}
+function showNotif(t){let n=document.getElementById('notif');n.innerText=t;n.classList.remove('hidden');setTimeout(()=>n.classList.add('hidden'),3000);}
+function prosesTransfer(){let nama=document.getElementById('tf-nama').value;let jml=parseInt(document.getElementById('tf-jumlah').value);if(!nama||!jml)return showNotif('Lengkapi dulu!');if(jml>saldo)return showNotif('Saldo kurang!');saldo-=jml;let cb=Math.floor(jml*0.05);saldo+=cb;riwayat.unshift({type:'Transfer 0%',desc:'Ke '+nama+' | Cashback Rp '+cb.toLocaleString(),amount:'-Rp '+jml.toLocaleString()});localStorage.setItem('ponpay_riwayat',JSON.stringify(riwayat));updateSaldo();showNotif('✅ Transfer ke '+nama+' Berhasil + Cashback Rp '+cb.toLocaleString());}
+function prosesPulsa(){let no=document.getElementById('pulsa-no').value;let jml=pulsaNom;if(!no)return showNotif('Masukkan No HP!');if(jml>saldo)return showNotif('Saldo kurang!');saldo-=jml;let cb=Math.floor(jml*0.3);saldo+=cb;riwayat.unshift({type:'Pulsa',desc:no+' | Cashback 30%: Rp '+cb.toLocaleString(),amount:'-Rp '+jml.toLocaleString()});localStorage.setItem('ponpay_riwayat',JSON.stringify(riwayat));updateSaldo();showNotif('✅ Pulsa '+jml.toLocaleString()+' ke '+no+' OK! Cashback Rp '+cb.toLocaleString());}
+function prosesPLN(){let no=document.getElementById('pln-no').value;let jml=parseInt(document.getElementById('pln-jumlah').value);if(!no||!jml)return showNotif('Lengkapi PLN!');if(jml>saldo)return showNotif('Saldo kurang!');saldo-=jml;let cb=Math.floor(jml*0.3);saldo+=cb;riwayat.unshift({type:'PLN',desc:'ID '+no+' | Cashback Rp '+cb.toLocaleString(),amount:'-Rp '+jml.toLocaleString()});localStorage.setItem('ponpay_riwayat',JSON.stringify(riwayat));updateSaldo();showNotif('✅ PLN Rp '+jml.toLocaleString()+' berhasil! Cashback Rp '+cb.toLocaleString());}
+function renderRiwayat(){let l=document.getElementById('list-riwayat');if(riwayat.length==0)return;l.innerHTML=riwayat.map(r=>`<div class="flex justify-between border-b py-2"><div><p class="font-bold text-xs">${r.type}</p><p class="text-[11px] text-gray-500">${r.desc}</p></div><p class="text-xs font-bold">${r.amount}</p></div>`).join('');}
+updateSaldo();setPulsa(25000);
+</script>
+</body>
+  </html> html>
 <html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width"><title>Ponpay</title><style>body{margin:0;font-family:Arial;background:#0a0a0a;color:#fff;text-align:center}.h{background:linear-gradient(135deg,#00c853,#00e676);padding:80px 20px}.h h1{font-size:64px;margin:0}.b{background:#fff;color:#00c853;padding:16px 32px;border-radius:99px;text-decoration:none;font-weight:800;display:inline-block;margin-top:20px}.g{padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:700px;margin:0 auto}.c{background:#171717;border:1px solid #222;padding:20px;border-radius:16px}.c h3{color:#00e676}</style></head><body><div class="h"><h1>Ponpay</h1><p>Dompet Digital Pekanbaru - by Johan</p><a class="b" href="#">Download APK</a></div><div class="g"><div class="c"><h3>Transfer</h3>0% admin</div><div class="c"><h3>Topup</h3>Pulsa PLN</div><div class="c"><h3>Cashback</h3>30%</div><div class="c"><h3>Aman</h3>Bank level</div></div><p style="color:#555;padding:40px">2026 Ponpay Pekanbaru</p></body></html>
